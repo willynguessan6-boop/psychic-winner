@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gesti-Cash CI | Dashboard</title>
+    <style>
+      :root {
+    --bg-color: #0f172a;
+    --card-bg: #1e293b;
+    --primary: #38bdf8;
+    --success: #22c55e;
+    --text: #f8fafc;
+    --accent: #fbbf24;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text);
+    margin: 0;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+h1 { color: var(--primary); font-weight: 800; margin-bottom: 5px; }
+
+/* Design des cartes de stats */
+.card-stats {
+    background: var(--card-bg);
+    padding: 25px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    width: 100%;
+    max-width: 400px;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 25px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+}
+
+.stat-value {
+    font-size: 1.4rem;
+    font-weight: 900;
+}
+
+/* Formulaire moderne */
+.form-container {
+    background: var(--card-bg);
+    padding: 25px;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 400px;
+    box-sizing: border-box;
+}
+
+input {
+    background: #334155;
+    border: 1px solid #475569;
+    color: white;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 12px;
+    width: 100%;
+    box-sizing: border-box;
+    font-size: 1rem;
+}
+
+input:focus {
+    border-color: var(--primary);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+}
+
+/* Boutons stylisés */
+.btn-add {
+    background: linear-gradient(135deg, var(--success), #16a34a);
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border: none;
+    padding: 18px;
+    border-radius: 12px;
+    margin-top: 10px;
+    box-shadow: 0 4px 14px 0 rgba(34, 197, 94, 0.3);
+}
+
+/* Historique "Pro" */
+.transaction-item {
+    background: #1e293b;
+    border-radius: 12px;
+    border-left: 4px solid var(--primary);
+    margin-bottom: 12px;
+    padding: 15px;
+    transition: 0.2s;
+}
+
+.transaction-item:hover {
+    transform: translateX(5px);
+    background: #2d3e50;
+}
+
+/* Écran de verrouillage stylé */
+#lockScreen {
+    background: var(--bg-color) !important;
+}
+/* Nouveau style pour les boutons secondaires */
+.secondary-btns-container {
+    display: flex;
+    justify-content: space-between; /* Pour mettre un bouton à gauche, un à droite */
+    gap: 10px; /* Espace entre les deux boutons */
+    width: 100%;
+    max-width: 400px;
+    margin: 15px 0; /* Un peu d'espace au dessus et en dessous */
+}
+
+.btn-secondary {
+    flex: 1; /* Chaque bouton prend la moitié de l'espace */
+    border: none;
+    border-radius: 8px; /* Bords plus fins */
+    font-weight: 600; /* Texte gras, mais élégant */
+    font-size: 0.85rem; /* Texte plus petit */
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-transform: capitalize; /* Juste la première lettre en majuscule */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Ombre légère */
+    padding: 10px; /* Beaucoup moins de hauteur */
+    text-align: center;
+}
+
+/* Style spécifique WhatsApp */
+.btn-whatsapp {
+    background-color: #25D366; /* Vert WhatsApp, moins saturé que la bande verte */
+    color: white;
+}
+
+.btn-whatsapp:hover {
+    background-color: #1ebe57; /* Un peu plus sombre au survol */
+}
+
+/* Style spécifique Réinitialisation */
+.btn-reset {
+    background-color: #ef4444; /* Rouge Alerte */
+    color: white;
+}
+
+.btn-reset:hover {
+    background-color: #dc2626; /* Un peu plus sombre au survol */
+}
+    </style>
+</head>
+<body>
+    <div id="lockScreen" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#0f172a; z-index:9999; display:flex; flex-direction:column; align-items:center; justify-content:center; color:white; text-align:center; padding:20px;">
+    <h1 id="lockTitle">Gesti-Cash CI</h1>
+    <p id="lockInstruction">Chargement...</p>
+    <input type="password" id="pinInput" placeholder="Code PIN" style="max-width:200px; text-align:center; font-size:2rem; padding:10px; margin:20px; border-radius:10px; border:none;">
+    <button onclick="gererAcces()" id="lockBtn" style="background:#22c55e; color:white; padding:15px 30px; border:none; border-radius:10px; font-weight:bold; cursor:pointer; width:200px;">Valider</button>
+</div>
+
+    <div class="header">
+        <h1>Gesti-Cash</h1>
+        <p>Gérez votre business en un clic.</p>
+    </div>
+
+    <div class="card-stats">
+        <div class="stat-item">
+            <div>Ventes💵</div>
+            <div class="stat-value" id="totalVentes">0 FCFA</div>
+        </div>
+        <div class="stat-item">
+            <div>Bénéfice📈</div>
+            <div class="stat-value" style="color: var(--success);" id="totalBenef">0 FCFA</div>
+        </div>
+    </div>
+
+    <div class="form-container">
+        <h3>Nouvelle Vente</h3>
+        <input type="text" id="produit" placeholder="Nom du produit">
+        <input type="number" id="prixVente" placeholder="Prix de vente (FCFA)">
+        <input type="number" id="prixAchat" placeholder="Prix d'achat (Coût)">
+        <button class="btn-add" onclick="ajouterVente()">Enregistrer la vente</button>
+    </div>
+<div class="secondary-btns-container">
+    <button onclick="envoyerRapport()" class="btn-secondary btn-whatsapp">
+        💬 Rapport WhatsApp
+    </button>   
+</div>
+    <div class="history" id="listeTransactions">
+        <h4>Historique du jour</h4>
+        </div>
+
+    <script>
+    // 1. Chargement des données sauvegardées au démarrage
+let totalVentes = parseFloat(localStorage.getItem('totalVentes')) || 0;
+let totalBenefice = parseFloat(localStorage.getItem('totalBenefice')) || 0;
+let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+
+// Affichage initial des données sauvegardées
+actualiserAffichage();
+chargerHistorique();
+
+function ajouterVente() {
+    const produit = document.getElementById('produit').value;
+    const prixVente = parseFloat(document.getElementById('prixVente').value);
+    const prixAchat = parseFloat(document.getElementById('prixAchat').value);
+
+    if (!produit || isNaN(prixVente) || isNaN(prixAchat)) {
+        alert("Veuillez remplir tous les champs.");
+        return;
+    }
+
+    const beneficeTransaction = prixVente - prixAchat;
+    
+    // Ajout de la date et de l'heure
+    const maintenant = new Date();
+    const dateHeure = maintenant.toLocaleDateString('fr-FR') + ' à ' + maintenant.toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'});
+
+    // Mise à jour des totaux
+    totalVentes += prixVente;
+    totalBenefice += beneficeTransaction;
+
+    // Sauvegarde de la transaction dans la liste
+    const nouvelleTransaction = {
+        produit,
+        prixVente,
+        prixAchat,
+        benefice: beneficeTransaction,
+        date: dateHeure
+    };
+    transactions.unshift(nouvelleTransaction); // Ajoute au début de la liste
+
+    // SAUVEGARDE LOCALE (La Mémoire)
+    localStorage.setItem('totalVentes', totalVentes);
+    localStorage.setItem('totalBenefice', totalBenefice);
+    localStorage.setItem('transactions', JSON.stringify(transactions));
+
+    actualiserAffichage();
+    ajouterALHistoriqueUI(nouvelleTransaction);
+
+    // Nettoyage
+    document.getElementById('produit').value = '';
+    document.getElementById('prixVente').value = '';
+    document.getElementById('prixAchat').value = '';
+}
+
+function actualiserAffichage() {
+    document.getElementById('totalVentes').innerText = totalVentes.toLocaleString('fr-FR') + " FCFA";
+    document.getElementById('totalBenef').innerText = totalBenefice.toLocaleString('fr-FR') + " FCFA";
+}
+
+function ajouterALHistoriqueUI(t) {
+    const liste = document.getElementById('listeTransactions');
+    const item = document.createElement('div');
+    item.className = 'transaction-item';
+    item.innerHTML = `
+        <div>
+            <strong>${t.produit}</strong> <small style="color:gray">(${t.date})</small><br>
+            <span style="color: #666; font-size: 0.8em;">Achat: ${t.prixAchat} | Vente: ${t.prixVente}</span>
+        </div>
+        <div style="font-weight: bold; color: ${t.benefice >= 0 ? '#28a745' : '#dc3545'};">
+            ${t.benefice >= 0 ? '+' : ''}${t.benefice} FCFA
+        </div>
+    `;
+    liste.insertBefore(item, liste.children[1]);
+}
+
+function chargerHistorique() {
+    transactions.forEach(t => ajouterALHistoriqueUI(t));
+}
+
+function envoyerRapport() {
+    const message = `📊 *BILAN GESTI-CASH CI*\n\n` +
+                    `💰 TOTAL VENTES : ${totalVentes.toLocaleString('fr-FR')} FCFA\n` +
+                    `📈 BÉNÉFICE NET : ${totalBenefice.toLocaleString('fr-FR')} FCFA\n\n` +
+                    `Généré le ${new Date().toLocaleDateString()} par ma Startup.`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
+}
+// On récupère le code enregistré (s'il existe)
+let pinEnregistre = localStorage.getItem('userPin');
+
+// Cette fonction s'exécute dès que la page s'affiche
+window.onload = function() {
+    const titre = document.getElementById('lockTitle');
+    const instruction = document.getElementById('lockInstruction');
+    const bouton = document.getElementById('lockBtn');
+
+    if (!pinEnregistre) {
+        // Mode : Nouvel Utilisateur
+        titre.innerText = "Bienvenue 👋";
+        instruction.innerText = "Créez votre code secret (4 chiffres minimum) :";
+        bouton.innerText = "Créer mon code";
+    } else {
+        // Mode : Utilisateur habituel
+        titre.innerText = "Accès Sécurisé 🔐";
+        instruction.innerText = "Entrez votre code secret pour ouvrir la caisse :";
+        bouton.innerText = "Ouvrir la session";
+    }
+};
+
+function gererAcces() {
+    const saisie = document.getElementById('pinInput').value;
+    const ecran = document.getElementById('lockScreen');
+
+    if (!pinEnregistre) {
+        // LOGIQUE DE CRÉATION
+        if (saisie.length >= 4) {
+            localStorage.setItem('userPin', saisie); // SAUVEGARDE PERMANENTE
+            pinEnregistre = saisie;
+            alert("✅ Code enregistré ! Ne l'oubliez pas.");
+            ecran.style.display = "none";
+        } else {
+            alert("Erreur : Le code doit faire au moins 4 chiffres.");
+        }
+    } else {
+        // LOGIQUE DE VÉRIFICATION
+        if (saisie === pinEnregistre) {
+            ecran.style.display = "none";
+        } else {
+            alert("❌ Code incorrect.");
+            document.getElementById('pinInput').value = '';
+        }
+    }
+}
+    </script>
+
+</body>
+</html>
